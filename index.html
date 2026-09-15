@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘 저녁 뭐 먹지? | 저녁 메뉴 추천</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #FFF6E9 0%, #FFEFD5 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #2D3436;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #FFFFFF;
+            width: 100%;
+            max-width: 480px;
+            padding: 40px 28px;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(235, 94, 40, 0.12);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-tag {
+            display: inline-block;
+            background-color: #FFF0ED;
+            color: #FF5A36;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1E2022;
+            margin-bottom: 8px;
+            word-break: keep-all;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: #6C757D;
+            margin-bottom: 32px;
+        }
+
+        .display-card {
+            background: #FAFAFA;
+            border: 2px dashed #E0E0E0;
+            border-radius: 20px;
+            padding: 36px 20px;
+            margin-bottom: 28px;
+            transition: all 0.3s ease;
+            position: relative;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .display-card.active {
+            border-style: solid;
+            border-color: #FF5A36;
+            background: #FFFBF8;
+        }
+
+        .emoji-box {
+            font-size: 80px;
+            line-height: 1;
+            margin-bottom: 16px;
+            transition: transform 0.2s ease;
+        }
+
+        .menu-name {
+            font-size: 24px;
+            font-weight: 800;
+            color: #2D3436;
+            min-height: 32px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #888;
+            background: #EFEFEF;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .btn-recommend {
+            width: 100%;
+            background: linear-gradient(135deg, #FF5A36 0%, #FF7E36 100%);
+            color: white;
+            border: none;
+            padding: 18px 0;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 16px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255, 90, 54, 0.3);
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+            outline: none;
+        }
+
+        .btn-recommend:hover {
+            box-shadow: 0 10px 24px rgba(255, 90, 54, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-recommend:active {
+            transform: translateY(1px);
+            box-shadow: 0 4px 12px rgba(255, 90, 54, 0.2);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2) rotate(5deg); }
+        }
+
+        .bounce {
+            animation: bounce 0.4s ease-in-out;
+        }
+
+        .spinning {
+            filter: blur(1px);
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <span class="header-tag">🍽️ 오늘 뭐 먹지?</span>
+        <h1>오늘 저녁 메뉴 추천</h1>
+        <p class="subtitle">결정 장애가 올 땐 버튼을 눌러보세요!</p>
+
+        <div class="display-card" id="displayCard">
+            <div class="emoji-box" id="emojiBox">🤔</div>
+            <div class="menu-name" id="menuName">버튼을 눌러주세요!</div>
+            <span class="category-badge" id="categoryBadge" style="display: none;">한식</span>
+        </div>
+
+        <button class="btn-recommend" id="recommendBtn" onclick="recommendMenu()">
+            🍕 저녁 메뉴 추천 🎲
+        </button>
+    </div>
+
+    <script>
+        const menuList = [
+            { name: "삼겹살", emoji: "🥓", category: "한식" },
+            { name: "치킨", emoji: "🍗", category: "야식/치킨" },
+            { name: "피자", emoji: "🍕", category: "양식" },
+            { name: "초밥", emoji: "🍣", category: "일식" },
+            { name: "떡볶이", emoji: "🥘", category: "분식" },
+            { name: "짜장면", emoji: "🍜", category: "중식" },
+            { name: "햄버거", emoji: "🍔", category: "패스트푸드" },
+            { name: "스테이크", emoji: "🥩", category: "양식" },
+            { name: "라멘", emoji: "🍜", category: "일식" },
+            { name: "김치찌개", emoji: "🍲", category: "한식" },
+            { name: "돈까스", emoji: "🍱", category: "일식/경양식" },
+            { name: "파스타", emoji: "🍝", category: "양식" },
+            { name: "쌀국수", emoji: "🍜", category: "아시안" },
+            { name: "마라탕", emoji: "🥘", category: "중식" },
+            { name: "족발/보쌈", emoji: "🍖", category: "한식" },
+            { name: "카레", emoji: "🍛", category: "일식/아시안" },
+            { name: "비빔밥", emoji: "🥣", category: "한식" },
+            { name: "타코", emoji: "🌮", category: "멕시칸" },
+            { name: "샌드위치", emoji: "🥪", category: "간식/간편식" },
+            { name: "부대찌개", emoji: "🍲", category: "한식" }
+        ];
+
+        let isSpinning = false;
+
+        function recommendMenu() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            const btn = document.getElementById('recommendBtn');
+            const emojiBox = document.getElementById('emojiBox');
+            const menuName = document.getElementById('menuName');
+            const categoryBadge = document.getElementById('categoryBadge');
+            const displayCard = document.getElementById('displayCard');
+
+            btn.disabled = true;
+            displayCard.classList.add('active');
+
+            let counter = 0;
+            const maxSpins = 12;
+            const interval = setInterval(() => {
+                const randomTemp = menuList[Math.floor(Math.random() * menuList.length)];
+                emojiBox.innerText = randomTemp.emoji;
+                menuName.innerText = randomTemp.name;
+                emojiBox.classList.add('spinning');
+                
+                counter++;
+                if (counter >= maxSpins) {
+                    clearInterval(interval);
+                    
+                    const finalMenu = menuList[Math.floor(Math.random() * menuList.length)];
+                    emojiBox.innerText = finalMenu.emoji;
+                    menuName.innerText = finalMenu.name;
+                    categoryBadge.innerText = finalMenu.category;
+                    categoryBadge.style.display = 'inline-block';
+
+                    emojiBox.classList.remove('spinning');
+                    emojiBox.classList.add('bounce');
+                    
+                    setTimeout(() => {
+                        emojiBox.classList.remove('bounce');
+                    }, 400);
+
+                    btn.disabled = false;
+                    isSpinning = false;
+                }
+            }, 80);
+        }
+    </script>
+</body>
+</html>
